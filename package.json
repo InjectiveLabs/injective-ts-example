@@ -10,8 +10,7 @@
   ],
   "scripts": {
     "start": "ts-node src/index.ts",
-    "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
-    "test": "jest"
+    "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
     "@injectivelabs/chain-consumer": "^0.0.68",
