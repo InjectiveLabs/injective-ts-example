@@ -27,7 +27,8 @@
     "@injectivelabs/web3-strategy": "^0.0.59",
     "bech32": "^2.0.0",
     "dotenv": "^10.0.0",
-    "ethereumjs-util": "^7.1.0"
+    "ethereumjs-util": "^7.1.0",
+    "web3": "^1.5.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.21",

@@ -1,6 +1,7 @@
 import { bech32 } from "bech32";
 import { Address, isValidPrivate, privateToAddress } from "ethereumjs-util";
 import { PRIVATE_KEY } from "../config";
+import { default as initWeb3 } from "./../web3";
 
 export const getInjectiveAddress = (address: string): string => {
   const addressBuffer = Address.fromString(address.toString()).toBuffer();
@@ -20,4 +21,15 @@ export const getAddressFromPrivateKey = (): string => {
   }
 
   return `0x${privateToAddress(privateKey).toString("hex")}`;
+};
+
+export const validateAddress = (address: string): boolean => {
+  const web3Strategy = initWeb3();
+  const web3 = web3Strategy.getWeb3();
+
+  try {
+    return !!web3.utils.isAddress(address);
+  } catch (e) {
+    throw new Error(`Your address ${address} is not valid`);
+  }
 };
