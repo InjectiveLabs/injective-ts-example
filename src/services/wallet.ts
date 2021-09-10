@@ -1,6 +1,7 @@
 import { default as initWeb3 } from "./../web3";
 import { PRIVATE_KEY } from "../config";
 import { Account } from "web3-core";
+import { getInjectiveAddress } from "../utils/address";
 
 export const generateWallet = (): Account => {
   const web3Strategy = initWeb3();
@@ -39,4 +40,12 @@ export const deriveAddressFromPublicKey = (publicKey: string): string => {
   } catch (e) {
     throw new Error(e.message);
   }
+};
+
+export const deriveInjectiveAddressFromPublicKey = (
+  publicKey: string
+): string => {
+  const address = deriveAddressFromPublicKey(publicKey);
+
+  return getInjectiveAddress(address);
 };
