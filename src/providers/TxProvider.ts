@@ -58,6 +58,16 @@ export class TxProvider {
     }
   }
 
+  async getHash(): Promise<string> {
+    // const { message, chainId } = this;
+    // const txResponse = await this.prepare();
+    // const signature = await this.sign(txResponse.getData());
+
+    // TODO: Calculate txHash based on the `txResponse` and `signature`
+
+    return Promise.resolve(""); // TODO
+  }
+
   async broadcast(): Promise<string> {
     const { message, chainId } = this;
     const txResponse = await this.prepare();
