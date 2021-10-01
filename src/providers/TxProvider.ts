@@ -43,7 +43,7 @@ export class TxProvider {
         message,
         chainId,
       });
-    } catch (e) {
+    } catch (e: any) {
       throw new ExchangeException(e.message);
     }
   }
@@ -53,7 +53,7 @@ export class TxProvider {
 
     try {
       return await web3Strategy.signTypedDataV4(txData, address);
-    } catch (e) {
+    } catch (e: any) {
       throw new Web3Exception(e.message);
     }
   }
@@ -65,7 +65,7 @@ export class TxProvider {
 
     // TODO: Calculate txHash based on the `txResponse` and `signature`
 
-    return Promise.resolve(""); // TODO
+    return Promise.resolve(""); // Remove this
   }
 
   async broadcast(): Promise<string> {
@@ -82,7 +82,7 @@ export class TxProvider {
       });
 
       return txHash;
-    } catch (e) {
+    } catch (e: any) {
       throw new ExchangeException(e.message);
     }
   }
