@@ -24,6 +24,7 @@ const fs = require("fs").promises;
     const amount = new BigNumberInBase(
       new BigNumberInBase(user.total).toFixed(4, BigNumberInBase.ROUND_UP)
     );
+
     const amountInWei = new BigNumberInWei(
       amount.toWei().toFixed(0, BigNumberInBase.ROUND_UP)
     );
@@ -32,7 +33,7 @@ const fs = require("fs").promises;
     denoms.push("inj");
     userWithRewards[i].distributed = true;
 
-    if (i % batch === 0 && i > 0) {
+    if ((i % batch === 0 && i > 0) || i === userWithRewards.length - 1) {
       try {
         const txHash = await transferBatch({
           address,
@@ -47,7 +48,7 @@ const fs = require("fs").promises;
           JSON.stringify(userWithRewards, null, 1)
         );
 
-        console.log(`Sent ${i}/${userWithRewards.length} transfers.`);
+        console.log(`Sent ${i + 1}/${userWithRewards.length} transfers.`);
         console.log(`Transaction hash: ${txHash}`);
 
         amounts = [];
