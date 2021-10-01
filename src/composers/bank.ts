@@ -30,3 +30,34 @@ export const transfer = async ({
 
   return await txProvider.broadcast();
 };
+
+export const transferBatch = async ({
+  address,
+  denoms,
+  amounts,
+  injectiveAddress,
+  destinations,
+}: {
+  amounts: string[];
+  address: string;
+  denoms: string[];
+  destinations: string[];
+  injectiveAddress: string;
+}): Promise<string> => {
+  const message = destinations.map((destination, index) => {
+    return BankComposer.send({
+      denom: denoms[index],
+      amount: amounts[index],
+      srcInjectiveAddress: injectiveAddress,
+      dstInjectiveAddress: destination,
+    });
+  });
+
+  const txProvider = new TxProvider({
+    address,
+    message,
+    chainId: CHAIN_ID,
+  });
+
+  return await txProvider.broadcast();
+};
