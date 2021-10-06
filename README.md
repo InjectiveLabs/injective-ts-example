@@ -19,17 +19,18 @@ $ yarn
 2. Duplicate the .env.example to .env and fill the values
 
 ```bash
-# .env.example values description
-
+## ChainId should be 42 for devnet, 1 for mainnet
 CHAIN_ID=42
 
-### Used to fetch predefined endpoints for our exchange service and a sentry node, can be
+### Used to fetch predefined endpoints for our sentry nodes, can be
 ### devnet (testnet) or public (mainnet) or local for your own local setup 
 NETWORK=devnet
 
 ### Accounts private key used for signing
 PRIVATE_KEY=
 
+
+## If you are using some web3 related functions, please add these keys
 ### Alchemy key for mainnet if public network is used
 ALCHEMY_KEY=
 
@@ -40,7 +41,11 @@ ALCHEMY_KOVAN_KEY=
 3. Execute the example (optional)
    
 ```bash
-yarn start
+## Example getting data from the chain
+$ yarn consume 
+
+## Example writing transactions to the chain
+$ yarn broadcast
 ```
 
 ## 📖 Documentation
