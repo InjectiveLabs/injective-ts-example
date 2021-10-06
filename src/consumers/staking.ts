@@ -17,7 +17,7 @@ export const fetchValidators = async (): Promise<GrpcValidator[]> => {
     const { validators } = await stakingConsumer.fetchValidators();
 
     return validators;
-  } catch (e) {
+  } catch (e: any) {
     throw new Error(e.message);
   }
 };
@@ -31,7 +31,7 @@ export const fetchDelegations = async (
     });
 
     return delegations;
-  } catch (e) {
+  } catch (e: any) {
     throw new Error(e.message);
   }
 };
@@ -41,7 +41,7 @@ export const fetchUserDelegationRewards = async (
 ): Promise<GrpcDelegationDelegatorReward[]> => {
   try {
     return await distributionConsumer.fetchDelegatorRewards(injectiveAddress);
-  } catch (e) {
+  } catch (e: any) {
     throw new Error(e.message);
   }
 };
@@ -56,7 +56,7 @@ export const fetchUserUnBondingDelegations = async (
       });
 
     return unbondingDelegations;
-  } catch (e) {
+  } catch (e: any) {
     throw new Error(e.message);
   }
 };
@@ -70,7 +70,7 @@ export const fetchUserReDelegations = async (
     });
 
     return redelegations;
-  } catch (e) {
+  } catch (e: any) {
     throw new Error(e.message);
   }
 };

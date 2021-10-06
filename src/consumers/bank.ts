@@ -24,7 +24,7 @@ export const fetchBalance = async ({
     }
 
     return balance;
-  } catch (e) {
+  } catch (e: any) {
     throw new ExchangeException(e.message);
   }
 };
@@ -36,7 +36,7 @@ export const fetchBalances = async (
     return await bankConsumer.fetchBalances({
       accountAddress: injectiveAddress,
     });
-  } catch (e) {
+  } catch (e: any) {
     throw new ExchangeException(e.message);
   }
 };

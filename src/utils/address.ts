@@ -1,7 +1,8 @@
+import Web3Utils from "web3-utils";
+import secp256k1 from "secp256k1";
 import { bech32 } from "bech32";
 import { Address, isValidPrivate, privateToAddress } from "ethereumjs-util";
 import { PRIVATE_KEY } from "../config";
-import { default as initWeb3 } from "./../web3";
 
 export const getInjectiveAddress = (address: string): string => {
   const addressBuffer = Address.fromString(address.toString()).toBuffer();
@@ -19,27 +20,66 @@ export const getAddressFromInjectiveAddress = (address: string): string => {
   ).toString("hex")}`;
 };
 
-export const getAddressFromPrivateKey = (): string => {
-  if (!PRIVATE_KEY) {
+export const getAddressFromPrivateKey = (
+  privateKey: string | undefined = PRIVATE_KEY
+): string => {
+  if (!privateKey) {
     throw new Error("You have to provide a PRIVATE_KEY in your .env");
   }
 
-  const privateKey = Buffer.from(PRIVATE_KEY.toString(), "hex");
+  const privateKeyHex = Buffer.from(privateKey.toString(), "hex");
 
-  if (!isValidPrivate(privateKey)) {
+  if (!isValidPrivate(privateKeyHex)) {
     throw new Error("The PRIVATE_KEY in your .env is not valid");
   }
 
-  return `0x${privateToAddress(privateKey).toString("hex")}`;
+  return `0x${privateToAddress(privateKeyHex).toString("hex")}`;
+};
+
+export const getPublicKeyFromPrivateKey = (
+  privateKey: string | undefined = PRIVATE_KEY
+): string => {
+  if (!privateKey) {
+    throw new Error("You have to provide a PRIVATE_KEY in your .env");
+  }
+
+  const privateKeyHex = Buffer.from(privateKey.toString(), "hex");
+
+  if (!isValidPrivate(privateKeyHex)) {
+    throw new Error("The PRIVATE_KEY in your .env is not valid");
+  }
+
+  const publicKeyByte = secp256k1.publicKeyCreate(privateKeyHex);
+  const buf1 = Buffer.from([10]);
+  const buf2 = Buffer.from([publicKeyByte.length]);
+  const buf3 = Buffer.from(publicKeyByte);
+
+  return Buffer.concat([buf1, buf2, buf3]).toString("hex");
+};
+
+export const getCosmosPublicKeyFromPrivateKey = (
+  privateKey: string | undefined = PRIVATE_KEY
+): { type: string; key: string } => {
+  if (!privateKey) {
+    throw new Error("You have to provide a PRIVATE_KEY in your .env");
+  }
+
+  const privateKeyHex = Buffer.from(privateKey.toString(), "hex");
+
+  if (!isValidPrivate(privateKeyHex)) {
+    throw new Error("The PRIVATE_KEY in your .env is not valid");
+  }
+
+  return {
+    type: "/cosmos.crypto.secp256k1.PubKey",
+    key: getPublicKeyFromPrivateKey(),
+  };
 };
 
 export const validateAddress = (address: string): boolean => {
-  const web3Strategy = initWeb3();
-  const web3 = web3Strategy.getWeb3();
-
   try {
-    return !!web3.utils.isAddress(address);
-  } catch (e) {
+    return !!Web3Utils.isAddress(address);
+  } catch (e: any) {
     throw new Error(`Your address ${address} is not valid`);
   }
 };
@@ -49,7 +89,7 @@ export const validateInjectiveAddress = (injectiveAddress: string): boolean => {
 
   try {
     return validateAddress(address);
-  } catch (e) {
+  } catch (e: any) {
     throw new Error(`Your Injective address ${injectiveAddress} is not valid`);
   }
 };
