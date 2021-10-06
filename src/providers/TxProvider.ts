@@ -1,89 +1,97 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { AccountAddress, ChainId } from "@injectivelabs/ts-types";
-import { ExchangeException, Web3Exception } from "@injectivelabs/exceptions";
-import { TransactionConsumer } from "@injectivelabs/exchange-consumer";
-import { PrepareTxResponse } from "@injectivelabs/exchange-api/injective_exchange_rpc_pb";
-import { EXCHANGE_URL } from "../config";
-import { Web3Strategy } from "@injectivelabs/web3-strategy";
-import { default as initWeb3 } from "./../web3";
-
-const transactionConsumer = new TransactionConsumer(EXCHANGE_URL);
+import { GrpcException } from "@injectivelabs/exceptions";
+import { SENTRY_URL } from "../config";
+import {
+  buildAuthInfo,
+  buildRawTx,
+  buildSignDoc,
+  buildTxBody,
+} from "../utils/tx";
+import { NodeHttpTransport } from "@improbable-eng/grpc-web-node-http-transport";
+import { ServiceClient } from "@injectivelabs/chain-api/cosmos/tx/v1beta1/service_pb_service";
+import {
+  BroadcastTxRequest,
+  BroadcastMode,
+} from "@injectivelabs/chain-api/cosmos/tx/v1beta1/service_pb";
+import { AccountDetails } from "../types";
+import { TxResponse } from "@injectivelabs/chain-api/cosmos/base/abci/v1beta1/abci_pb";
+import {
+  AuthInfo,
+  SignDoc,
+  TxBody,
+  TxRaw,
+} from "@injectivelabs/chain-api/cosmos/tx/v1beta1/tx_pb";
+import { Any } from "@injectivelabs/chain-api/google/protobuf/any_pb";
 
 export class TxProvider {
-  private message: any;
-
-  private web3Strategy: Web3Strategy;
-
-  private address: string; // Eth Wallet Address
-
-  private chainId: ChainId;
-
-  constructor({
-    message,
-    address,
-    chainId,
+  static async getRawTx({
+    authInfo,
+    txBody,
+    signature,
   }: {
-    message: any;
-    address: AccountAddress;
-    chainId: ChainId;
-    gasLimit?: number;
-  }) {
-    this.message = message;
-    this.web3Strategy = initWeb3();
-    this.address = address;
-    this.chainId = chainId;
-  }
-
-  async prepare(): Promise<PrepareTxResponse> {
-    const { chainId, address, message } = this;
-
+    authInfo: AuthInfo;
+    txBody: TxBody;
+    signature: string | Uint8Array;
+  }): Promise<TxRaw> {
     try {
-      return await transactionConsumer.prepareTxRequest({
-        address,
-        message,
-        chainId,
-      });
-    } catch (e) {
-      throw new ExchangeException(e.message);
-    }
-  }
-
-  async sign(txData: string): Promise<string> {
-    const { address, web3Strategy } = this;
-
-    try {
-      return await web3Strategy.signTypedDataV4(txData, address);
-    } catch (e) {
-      throw new Web3Exception(e.message);
-    }
-  }
-
-  async getHash(): Promise<string> {
-    // const { message, chainId } = this;
-    // const txResponse = await this.prepare();
-    // const signature = await this.sign(txResponse.getData());
-
-    // TODO: Calculate txHash based on the `txResponse` and `signature`
-
-    return Promise.resolve(""); // TODO
-  }
-
-  async broadcast(): Promise<string> {
-    const { message, chainId } = this;
-    const txResponse = await this.prepare();
-    const signature = await this.sign(txResponse.getData());
-
-    try {
-      const { txHash } = await transactionConsumer.broadcastTxRequest({
-        message: message as any,
+      return buildRawTx({
         signature,
-        chainId,
-        txResponse,
+        txBody,
+        authInfo,
       });
+    } catch (e: any) {
+      throw new Error(e.message);
+    }
+  }
 
-      return txHash;
-    } catch (e) {
-      throw new ExchangeException(e.message);
+  static async prepare({
+    accountDetails,
+    message,
+  }: {
+    accountDetails: AccountDetails;
+    message: { message: any; type: string };
+  }): Promise<{ txBody: TxBody; authInfo: AuthInfo; signDoc: SignDoc }> {
+    try {
+      const packedMessage = new Any();
+      packedMessage.setTypeUrl(message.type);
+      packedMessage.setValue(message.message.serializeBinary());
+
+      const txBody = buildTxBody(packedMessage);
+      const authInfo = buildAuthInfo(accountDetails);
+      const signDoc = buildSignDoc({ txBody, authInfo, accountDetails });
+
+      return { txBody, authInfo, signDoc };
+    } catch (e: any) {
+      throw new Error(e.message);
+    }
+  }
+
+  static async broadcastTransaction(
+    rawTx: TxRaw
+  ): Promise<TxResponse.AsObject> {
+    const txService = new ServiceClient(SENTRY_URL, {
+      transport: NodeHttpTransport(),
+    });
+
+    const broadcastTxRequest = new BroadcastTxRequest();
+    broadcastTxRequest.setTxBytes(rawTx.serializeBinary());
+    broadcastTxRequest.setMode(BroadcastMode.BROADCAST_MODE_BLOCK);
+
+    try {
+      return new Promise((resolve, reject) => {
+        return txService.broadcastTx(broadcastTxRequest, (error, response) => {
+          if (error || !response) {
+            return reject(error);
+          }
+
+          const txResponse = response.getTxResponse();
+
+          return resolve(
+            (txResponse ? txResponse.toObject() : {}) as TxResponse.AsObject
+          );
+        });
+      });
+    } catch (e: any) {
+      throw new GrpcException(e.message);
     }
   }
 }
