@@ -4,11 +4,13 @@ import { config } from "dotenv";
 
 config();
 
-const NETWORK = (process.env.NETWORK || Network.Devnet) as Network;
-const CHAIN_ID = (process.env.CHAIN_ID || ChainId.Kovan) as ChainId;
-const INJECTIVE_CHAIN_ID = [Network.Devnet, Network.Testnet].includes(NETWORK)
-  ? "injective-777"
-  : "injective-1";
+const NETWORK = (process.env.NETWORK || Network.Public) as Network;
+const CHAIN_ID = (process.env.CHAIN_ID || ChainId.Mainnet) as ChainId;
+const INJECTIVE_CHAIN_ID = [Network.Public, Network.MainnetOld].includes(
+  NETWORK
+)
+  ? "injective-1"
+  : "injective-777";
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 const endpoints = getUrlEndpointForNetwork(NETWORK);

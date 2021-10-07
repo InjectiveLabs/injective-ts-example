@@ -19,14 +19,14 @@ $ yarn
 2. Duplicate the .env.example to .env and fill the values
 
 ```bash
-## ChainId should be 42 for devnet, 1 for mainnet
-CHAIN_ID=42
+## ChainId should be 1 for mainnet, 42 for testnet
+CHAIN_ID=1
 
 ### Used to fetch predefined endpoints for our sentry nodes, can be
-### devnet (testnet) or public (mainnet) or local for your own local setup 
-NETWORK=devnet
+### public (mainnet) or testnet (testnet)
+NETWORK=public
 
-### Accounts private key used for signing
+### Account's private key used for signing
 PRIVATE_KEY=
 ```
 
