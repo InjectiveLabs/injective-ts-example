@@ -6,7 +6,9 @@ config();
 
 const NETWORK = (process.env.NETWORK || Network.Devnet) as Network;
 const CHAIN_ID = (process.env.CHAIN_ID || ChainId.Kovan) as ChainId;
-const INJECTIVE_CHAIN_ID = "injective-1";
+const INJECTIVE_CHAIN_ID = [Network.Devnet, Network.Testnet].includes(NETWORK)
+  ? "injective-777"
+  : "injective-1";
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const ALCHEMY_KEY = process.env.ALCHEMY_KEY;
 const ALCHEMY_KOVAN_KEY = process.env.ALCHEMY_KOVAN_KEY;

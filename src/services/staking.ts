@@ -37,7 +37,9 @@ export const delegate = async ({
     accountDetails,
     message,
   });
-  console.log(`Transaction simulation response: ${response.result}`);
+  console.log(
+    `Transaction simulation response: ${JSON.stringify(response.gasInfo)}`
+  );
 
   /**
    * Broadcast the transaction on chain, done in three steps:
@@ -45,10 +47,16 @@ export const delegate = async ({
    * 2. Sign the transaction,
    * 3. Broadcast the transaction
    */
-  return await new TxProvider({
+  const txResponse = await new TxProvider({
     accountDetails,
     message,
   }).broadcastTransaction();
+
+  console.log(
+    `Broadcasted transaction hash: ${JSON.stringify(txResponse.txhash)}`
+  );
+
+  return txResponse;
 };
 
 export const reDelegate = async ({
@@ -85,7 +93,9 @@ export const reDelegate = async ({
     accountDetails,
     message,
   });
-  console.log(`Transaction simulation response: ${response.result}`);
+  console.log(
+    `Transaction simulation response: ${JSON.stringify(response.gasInfo)}`
+  );
 
   /**
    * Broadcast the transaction on chain, done in three steps:
@@ -93,10 +103,16 @@ export const reDelegate = async ({
    * 2. Sign the transaction,
    * 3. Broadcast the transaction
    */
-  return await new TxProvider({
+  const txResponse = await new TxProvider({
     accountDetails,
     message,
   }).broadcastTransaction();
+
+  console.log(
+    `Broadcasted transaction hash: ${JSON.stringify(txResponse.txhash)}`
+  );
+
+  return txResponse;
 };
 
 export const unbond = async ({
@@ -128,7 +144,9 @@ export const unbond = async ({
     accountDetails,
     message,
   });
-  console.log(`Transaction simulation response: ${response.result}`);
+  console.log(
+    `Transaction simulation response: ${JSON.stringify(response.gasInfo)}`
+  );
 
   /**
    * Broadcast the transaction on chain, done in three steps:
@@ -136,8 +154,14 @@ export const unbond = async ({
    * 2. Sign the transaction,
    * 3. Broadcast the transaction
    */
-  return await new TxProvider({
+  const txResponse = await new TxProvider({
     accountDetails,
     message,
   }).broadcastTransaction();
+
+  console.log(
+    `Broadcasted transaction hash: ${JSON.stringify(txResponse.txhash)}`
+  );
+
+  return txResponse;
 };

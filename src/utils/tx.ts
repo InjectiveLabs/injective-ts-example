@@ -2,7 +2,6 @@ import {
   BigNumber,
   DEFAULT_GAS_LIMIT,
   DEFAULT_GAS_PRICE,
-  DEFAULT_TIMEOUT_HEIGHT,
 } from "@injectivelabs/utils";
 import { AccountDetails } from "../types";
 import { Any } from "@injectivelabs/chain-api/google/protobuf/any_pb";
@@ -26,7 +25,7 @@ export const buildTxBody = (message: any) => {
   const txBody = new TxBody();
   txBody.setMessagesList([message]);
   txBody.setMemo("");
-  txBody.setTimeoutHeight(DEFAULT_TIMEOUT_HEIGHT);
+  txBody.setTimeoutHeight(0);
 
   return txBody;
 };
@@ -38,7 +37,7 @@ export const buildAuthInfo = (accountDetails: AccountDetails) => {
   );
   feeAmount.setDenom("inj");
 
-  let fee = new Fee();
+  const fee = new Fee();
   fee.setGasLimit(DEFAULT_GAS_LIMIT);
   fee.setAmountList([feeAmount]);
 

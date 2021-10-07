@@ -8,13 +8,14 @@ import {
   getCosmosPublicKeyFromPrivateKey,
   getInjectiveAddress,
 } from "./utils/address";
+import { incrementAccountSequenceNumber } from "./utils/account";
 
 (async () => {
   const address = getAddressFromPrivateKey();
   const injectiveAddress = getInjectiveAddress(address);
   const cosmosPublicKey = getCosmosPublicKeyFromPrivateKey();
   const accountDetails = await fetchInjectiveAddressDetails(injectiveAddress);
-  const accountDetailsWithCosmosPublicKey = {
+  let accountDetailsWithCosmosPublicKey = {
     ...accountDetails,
     pubKey: cosmosPublicKey,
   };
@@ -27,7 +28,7 @@ import {
     const amountInWei = amount.toWei(
       18 // Token Decimals, in case of INJ its 18, in case od USDT its 6)
     );
-    const destination = "inj18j838zrg00e45e053zf5ehc9u3t3rar7ak0cv3";
+    const destination = "inj1ql0alrq4e4ec6rv9svqjwer0k6ewfjkaay9lne";
     const denom = "inj";
     await transfer({
       accountDetails: accountDetailsWithCosmosPublicKey,
@@ -43,6 +44,15 @@ import {
     console.log(e);
     process.exit();
   }
+
+  /**
+   * We need to increase the sequence number fot the next transaction
+   * We can also fetch the sequence number from the chain again to make
+   * sure the sequence number is entirely up to date
+   */
+  accountDetailsWithCosmosPublicKey = incrementAccountSequenceNumber(
+    accountDetailsWithCosmosPublicKey
+  );
 
   try {
     /**

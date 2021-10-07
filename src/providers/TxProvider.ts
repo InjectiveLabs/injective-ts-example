@@ -16,6 +16,8 @@ import {
 } from "@injectivelabs/chain-api/cosmos/tx/v1beta1/service_pb";
 import { AccountDetails } from "../types";
 import {
+  GasInfo,
+  Result,
   SimulationResponse,
   TxResponse,
 } from "@injectivelabs/chain-api/cosmos/base/abci/v1beta1/abci_pb";
@@ -146,19 +148,17 @@ export const simulateTransaction = async ({
   try {
     return new Promise((resolve, reject) => {
       return txService.simulate(simulateRequest, (error, response) => {
-        console.log(error);
-
         if (error || !response) {
           return reject(error);
         }
 
-        const txResponse = response.getResult();
+        const result = response.getResult();
+        const gasInfo = response.getGasInfo();
 
-        return resolve(
-          (txResponse
-            ? txResponse.toObject()
-            : {}) as SimulationResponse.AsObject
-        );
+        return resolve({
+          result: result ? result.toObject() : ({} as Result.AsObject),
+          gasInfo: gasInfo ? gasInfo.toObject() : ({} as GasInfo.AsObject),
+        });
       });
     });
   } catch (e: any) {

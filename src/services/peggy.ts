@@ -44,7 +44,9 @@ export const withdraw = async ({
     accountDetails,
     message,
   });
-  console.log(`Transaction simulation response: ${response.result}`);
+  console.log(
+    `Transaction simulation response: ${JSON.stringify(response.gasInfo)}`
+  );
 
   /**
    * Broadcast the transaction on chain, done in three steps:
@@ -52,8 +54,14 @@ export const withdraw = async ({
    * 2. Sign the transaction,
    * 3. Broadcast the transaction
    */
-  return await new TxProvider({
+  const txResponse = await new TxProvider({
     accountDetails,
     message,
   }).broadcastTransaction();
+
+  console.log(
+    `Broadcasted transaction hash: ${JSON.stringify(txResponse.txhash)}`
+  );
+
+  return txResponse;
 };

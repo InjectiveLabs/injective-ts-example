@@ -54,7 +54,7 @@ export const getPublicKeyFromPrivateKey = (
   const buf2 = Buffer.from([publicKeyByte.length]);
   const buf3 = Buffer.from(publicKeyByte);
 
-  return Buffer.concat([buf1, buf2, buf3]).toString("hex");
+  return Buffer.concat([buf1, buf2, buf3]).toString("base64");
 };
 
 export const getCosmosPublicKeyFromPrivateKey = (
@@ -70,9 +70,11 @@ export const getCosmosPublicKeyFromPrivateKey = (
     throw new Error("The PRIVATE_KEY in your .env is not valid");
   }
 
+  const publicKey = getPublicKeyFromPrivateKey();
+
   return {
-    type: "/cosmos.crypto.secp256k1.PubKey",
-    key: getPublicKeyFromPrivateKey(),
+    type: "/injective.crypto.v1beta1.ethsecp256k1.PubKey",
+    key: publicKey,
   };
 };
 
