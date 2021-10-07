@@ -5,15 +5,20 @@ import {
   buildRawTx,
   buildSignDoc,
   buildTxBody,
+  signTransaction,
 } from "../utils/tx";
 import { NodeHttpTransport } from "@improbable-eng/grpc-web-node-http-transport";
 import { ServiceClient } from "@injectivelabs/chain-api/cosmos/tx/v1beta1/service_pb_service";
 import {
   BroadcastTxRequest,
   BroadcastMode,
+  SimulateRequest,
 } from "@injectivelabs/chain-api/cosmos/tx/v1beta1/service_pb";
 import { AccountDetails } from "../types";
-import { TxResponse } from "@injectivelabs/chain-api/cosmos/base/abci/v1beta1/abci_pb";
+import {
+  SimulationResponse,
+  TxResponse,
+} from "@injectivelabs/chain-api/cosmos/base/abci/v1beta1/abci_pb";
 import {
   AuthInfo,
   SignDoc,
@@ -23,33 +28,30 @@ import {
 import { Any } from "@injectivelabs/chain-api/google/protobuf/any_pb";
 
 export class TxProvider {
-  static async getRawTx({
-    authInfo,
-    txBody,
-    signature,
-  }: {
-    authInfo: AuthInfo;
-    txBody: TxBody;
-    signature: string | Uint8Array;
-  }): Promise<TxRaw> {
-    try {
-      return buildRawTx({
-        signature,
-        txBody,
-        authInfo,
-      });
-    } catch (e: any) {
-      throw new Error(e.message);
-    }
-  }
+  private accountDetails: AccountDetails;
+  private message: {
+    message: any;
+    type: string;
+  };
 
-  static async prepare({
+  constructor({
     accountDetails,
     message,
   }: {
     accountDetails: AccountDetails;
     message: { message: any; type: string };
-  }): Promise<{ txBody: TxBody; authInfo: AuthInfo; signDoc: SignDoc }> {
+  }) {
+    this.accountDetails = accountDetails;
+    this.message = message;
+  }
+
+  async prepare(): Promise<{
+    txBody: TxBody;
+    authInfo: AuthInfo;
+    signDoc: SignDoc;
+  }> {
+    const { accountDetails, message } = this;
+
     try {
       const packedMessage = new Any();
       packedMessage.setTypeUrl(message.type);
@@ -65,13 +67,18 @@ export class TxProvider {
     }
   }
 
-  static async broadcastTransaction(
-    rawTx: TxRaw
-  ): Promise<TxResponse.AsObject> {
+  async broadcastTransaction(): Promise<TxResponse.AsObject> {
+    const { txBody, authInfo, signDoc } = await this.prepare();
+    const signature = await signTransaction(signDoc);
+    const rawTx = buildRawTx({
+      txBody,
+      authInfo,
+      signature,
+    });
+
     const txService = new ServiceClient(SENTRY_URL, {
       transport: NodeHttpTransport(),
     });
-
     const broadcastTxRequest = new BroadcastTxRequest();
     broadcastTxRequest.setTxBytes(rawTx.serializeBinary());
     broadcastTxRequest.setMode(BroadcastMode.BROADCAST_MODE_BLOCK);
@@ -95,3 +102,66 @@ export class TxProvider {
     }
   }
 }
+
+export const getRawTx = async ({
+  accountDetails,
+  message,
+}: {
+  accountDetails: AccountDetails;
+  message: { message: any; type: string };
+}): Promise<TxRaw> => {
+  try {
+    const txProvider = new TxProvider({ accountDetails, message });
+    const { txBody, authInfo, signDoc } = await txProvider.prepare();
+    const signature = await signTransaction(signDoc);
+
+    return buildRawTx({
+      signature,
+      txBody,
+      authInfo,
+    });
+  } catch (e: any) {
+    throw new GrpcException(e.message);
+  }
+};
+
+export const simulateTransaction = async ({
+  accountDetails,
+  message,
+}: {
+  accountDetails: AccountDetails;
+  message: { message: any; type: string };
+}): Promise<SimulationResponse.AsObject> => {
+  const rawTx = await getRawTx({
+    accountDetails,
+    message,
+  });
+
+  const txService = new ServiceClient(SENTRY_URL, {
+    transport: NodeHttpTransport(),
+  });
+  const simulateRequest = new SimulateRequest();
+  simulateRequest.setTxBytes(rawTx.serializeBinary());
+
+  try {
+    return new Promise((resolve, reject) => {
+      return txService.simulate(simulateRequest, (error, response) => {
+        console.log(error);
+
+        if (error || !response) {
+          return reject(error);
+        }
+
+        const txResponse = response.getResult();
+
+        return resolve(
+          (txResponse
+            ? txResponse.toObject()
+            : {}) as SimulationResponse.AsObject
+        );
+      });
+    });
+  } catch (e: any) {
+    throw new GrpcException(e.message);
+  }
+};

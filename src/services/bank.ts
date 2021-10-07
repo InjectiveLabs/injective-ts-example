@@ -1,6 +1,10 @@
 import { BankProtoComposer } from "@injectivelabs/chain-consumer";
-import { TxProvider } from "../providers/TxProvider";
-import { getHashFromRawTx, signTransaction } from "../utils/tx";
+import {
+  getRawTx,
+  simulateTransaction,
+  TxProvider,
+} from "../providers/TxProvider";
+import { getHashFromRawTx } from "../utils/tx";
 import { AccountDetails } from "../types";
 import { TxResponse } from "@injectivelabs/chain-api/cosmos/base/abci/v1beta1/abci_pb";
 
@@ -22,18 +26,29 @@ export const transfer = async ({
     dstInjectiveAddress: destination,
   });
 
-  const { txBody, signDoc, authInfo } = await TxProvider.prepare({
+  /**
+   * Calculate Transaction hash
+   */
+  const rawTx = await getRawTx({ accountDetails, message });
+  console.log(`Transaction Hash: ${getHashFromRawTx(rawTx)}`);
+
+  /**
+   * Simulate execution of the Transaction
+   */
+  const response = await simulateTransaction({
     accountDetails,
     message,
   });
-  const signature = await signTransaction(signDoc);
-  const rawTx = await TxProvider.getRawTx({
-    txBody,
-    authInfo,
-    signature,
-  });
+  console.log(`Transaction simulation response: ${response.result}`);
 
-  console.log(`Transaction Hash: ${getHashFromRawTx(rawTx)}`);
-
-  return await TxProvider.broadcastTransaction(rawTx);
+  /**
+   * Broadcast the transaction on chain, done in three steps:
+   * 1. Prepare the transaction,
+   * 2. Sign the transaction,
+   * 3. Broadcast the transaction
+   */
+  return await new TxProvider({
+    accountDetails,
+    message,
+  }).broadcastTransaction();
 };
