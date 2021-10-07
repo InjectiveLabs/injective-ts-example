@@ -1,8 +1,8 @@
-import Web3Utils from "web3-utils";
 import secp256k1 from "secp256k1";
 import { bech32 } from "bech32";
 import { Address, isValidPrivate, privateToAddress } from "ethereumjs-util";
 import { PRIVATE_KEY } from "../config";
+import { validateAddress } from "./wallet";
 
 export const getInjectiveAddress = (address: string): string => {
   const addressBuffer = Address.fromString(address.toString()).toBuffer();
@@ -54,7 +54,7 @@ export const getPublicKeyFromPrivateKey = (
   const buf2 = Buffer.from([publicKeyByte.length]);
   const buf3 = Buffer.from(publicKeyByte);
 
-  return Buffer.concat([buf1, buf2, buf3]).toString("base64");
+  return Buffer.concat([buf1, buf2, buf3]).toString("hex");
 };
 
 export const getCosmosPublicKeyFromPrivateKey = (
@@ -76,14 +76,6 @@ export const getCosmosPublicKeyFromPrivateKey = (
     type: "/injective.crypto.v1beta1.ethsecp256k1.PubKey",
     key: publicKey,
   };
-};
-
-export const validateAddress = (address: string): boolean => {
-  try {
-    return !!Web3Utils.isAddress(address);
-  } catch (e: any) {
-    throw new Error(`Your address ${address} is not valid`);
-  }
 };
 
 export const validateInjectiveAddress = (injectiveAddress: string): boolean => {

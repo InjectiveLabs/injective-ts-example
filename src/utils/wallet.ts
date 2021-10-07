@@ -1,7 +1,6 @@
 import { PRIVATE_KEY } from "../config";
 import { Account } from "web3-core";
 import Web3Utils from "web3-utils";
-import { getInjectiveAddress } from "./address";
 import { web3 } from "../web3";
 
 export const generateWallet = (): Account => {
@@ -34,10 +33,10 @@ export const deriveAddressFromPublicKey = (publicKey: string): string => {
   }
 };
 
-export const deriveInjectiveAddressFromPublicKey = (
-  publicKey: string
-): string => {
-  const address = deriveAddressFromPublicKey(publicKey);
-
-  return getInjectiveAddress(address);
+export const validateAddress = (address: string): boolean => {
+  try {
+    return !!Web3Utils.isAddress(address);
+  } catch (e: any) {
+    throw new Error(`Your address ${address} is not valid`);
+  }
 };
