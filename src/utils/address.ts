@@ -44,7 +44,7 @@ export const getPublicKeyFromPrivateKey = (
   const buf2 = Buffer.from([publicKeyByte.length]);
   const buf3 = Buffer.from(publicKeyByte);
 
-  return Buffer.concat([buf1, buf2, buf3]).toString("hex");
+  return Buffer.concat([buf1, buf2, buf3]).toString("base64");
 };
 
 export const getCosmosPublicKeyFromPrivateKey = (
