@@ -10,18 +10,8 @@ const INJECTIVE_CHAIN_ID = [Network.Devnet, Network.Testnet].includes(NETWORK)
   ? "injective-777"
   : "injective-1";
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
-const ALCHEMY_KEY = process.env.ALCHEMY_KEY;
-const ALCHEMY_KOVAN_KEY = process.env.ALCHEMY_KOVAN_KEY;
 
 const endpoints = getUrlEndpointForNetwork(NETWORK);
 const SENTRY_URL = (process.env.SENTRY_URL || endpoints.chainUrl) as string;
 
-export {
-  NETWORK,
-  CHAIN_ID,
-  INJECTIVE_CHAIN_ID,
-  ALCHEMY_KEY,
-  ALCHEMY_KOVAN_KEY,
-  SENTRY_URL,
-  PRIVATE_KEY,
-};
+export { NETWORK, CHAIN_ID, INJECTIVE_CHAIN_ID, SENTRY_URL, PRIVATE_KEY };

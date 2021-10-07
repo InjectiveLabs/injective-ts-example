@@ -28,14 +28,6 @@ NETWORK=devnet
 
 ### Accounts private key used for signing
 PRIVATE_KEY=
-
-
-## If you are using some web3 related functions, please add these keys
-### Alchemy key for mainnet if public network is used
-ALCHEMY_KEY=
-
-### Alchemy key for tesnet (kovan) if devnet network is used
-ALCHEMY_KOVAN_KEY=
 ```
 
 3. Execute the example (optional)
