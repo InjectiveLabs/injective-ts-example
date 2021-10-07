@@ -50,7 +50,7 @@ export const delegate = async ({
   const txResponse = await new TxProvider({
     accountDetails,
     message,
-  }).broadcastTransaction();
+  }).broadcast();
 
   console.log(
     `Broadcasted transaction hash: ${JSON.stringify(txResponse.txhash)}`
@@ -106,7 +106,7 @@ export const reDelegate = async ({
   const txResponse = await new TxProvider({
     accountDetails,
     message,
-  }).broadcastTransaction();
+  }).broadcast();
 
   console.log(
     `Broadcasted transaction hash: ${JSON.stringify(txResponse.txhash)}`
@@ -157,7 +157,7 @@ export const unbond = async ({
   const txResponse = await new TxProvider({
     accountDetails,
     message,
-  }).broadcastTransaction();
+  }).broadcast();
 
   console.log(
     `Broadcasted transaction hash: ${JSON.stringify(txResponse.txhash)}`

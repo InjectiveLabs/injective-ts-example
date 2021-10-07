@@ -69,7 +69,7 @@ export class TxProvider {
     }
   }
 
-  async broadcastTransaction(): Promise<TxResponse.AsObject> {
+  async broadcast(): Promise<TxResponse.AsObject> {
     const { txBody, authInfo, signDoc } = await this.prepare();
     const signature = await signTransaction(signDoc);
     const rawTx = buildRawTx({

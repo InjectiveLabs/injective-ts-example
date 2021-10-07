@@ -57,7 +57,7 @@ export const withdraw = async ({
   const txResponse = await new TxProvider({
     accountDetails,
     message,
-  }).broadcastTransaction();
+  }).broadcast();
 
   console.log(
     `Broadcasted transaction hash: ${JSON.stringify(txResponse.txhash)}`
