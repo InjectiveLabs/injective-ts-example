@@ -2,22 +2,12 @@ import secp256k1 from "secp256k1";
 import { bech32 } from "bech32";
 import { Address, isValidPrivate, privateToAddress } from "ethereumjs-util";
 import { PRIVATE_KEY } from "../config";
-import { validateAddress } from "./wallet";
+import { getAddressFromInjectiveAddress, validateAddress } from "./wallet";
 
 export const getInjectiveAddress = (address: string): string => {
   const addressBuffer = Address.fromString(address.toString()).toBuffer();
 
   return bech32.encode("inj", bech32.toWords(addressBuffer));
-};
-
-export const getAddressFromInjectiveAddress = (address: string): string => {
-  if (address.startsWith("0x")) {
-    return address;
-  }
-
-  return `0x${Buffer.from(
-    bech32.fromWords(bech32.decode(address).words)
-  ).toString("hex")}`;
 };
 
 export const getAddressFromPrivateKey = (

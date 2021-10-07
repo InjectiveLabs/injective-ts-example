@@ -2,6 +2,7 @@ import { PRIVATE_KEY } from "../config";
 import { Account } from "web3-core";
 import Web3Utils from "web3-utils";
 import { web3 } from "../web3";
+import { bech32 } from "bech32";
 
 export const generateWallet = (): Account => {
   try {
@@ -31,6 +32,16 @@ export const deriveAddressFromPublicKey = (publicKey: string): string => {
   } catch (e: any) {
     throw new Error(e.message);
   }
+};
+
+export const getAddressFromInjectiveAddress = (address: string): string => {
+  if (address.startsWith("0x")) {
+    return address;
+  }
+
+  return `0x${Buffer.from(
+    bech32.fromWords(bech32.decode(address).words)
+  ).toString("hex")}`;
 };
 
 export const validateAddress = (address: string): boolean => {
