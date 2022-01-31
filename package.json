@@ -10,8 +10,8 @@
     "typescript"
   ],
   "scripts": {
-    "consume": "ts-node example/simple-consume.ts",
-    "broadcast": "ts-node example/simple-broadcast.ts",
+    "consume": "ts-node src/example/simple-consume.ts",
+    "broadcast": "ts-node src/example/simple-broadcast.ts",
     "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
