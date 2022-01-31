@@ -16,6 +16,7 @@ const INJECTIVE_CHAIN_ID = [Network.Public, Network.MainnetOld].includes(
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 const endpoints = getUrlEndpointForNetwork(NETWORK);
-const SENTRY_URL = (process.env.SENTRY_URL || endpoints.chainUrl) as string;
+const SENTRY_URL = (process.env.SENTRY_URL ||
+  endpoints.sentryGrpcApi) as string;
 
 export { NETWORK, CHAIN_ID, INJECTIVE_CHAIN_ID, SENTRY_URL, PRIVATE_KEY };
