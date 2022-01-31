@@ -1,6 +1,9 @@
-import { fetchBalance, fetchBalances } from "./consumers/bank";
-import { fetchDelegations } from "./consumers/staking";
-import { getAddressFromPrivateKey, getInjectiveAddress } from "./utils/address";
+import { fetchBalance, fetchBalances } from "../consumers/bank";
+import { fetchDelegations } from "../consumers/staking";
+import {
+  getAddressFromPrivateKey,
+  getInjectiveAddress,
+} from "../utils/address";
 
 (async () => {
   const address = getAddressFromPrivateKey();

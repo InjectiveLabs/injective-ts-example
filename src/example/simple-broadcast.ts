@@ -1,14 +1,14 @@
 import { BigNumberInBase } from "@injectivelabs/utils";
-import { transfer } from "./services/bank";
-import { delegate } from "./services/staking";
-import { fetchInjectiveAddressDetails } from "./consumers/auth";
-import { fetchValidators } from "./consumers/staking";
+import { transfer } from "../services/bank";
+import { delegate } from "../services/staking";
+import { fetchInjectiveAddressDetails } from "../consumers/auth";
+import { fetchValidators } from "../consumers/staking";
 import {
   getAddressFromPrivateKey,
   getCosmosPublicKeyFromPrivateKey,
   getInjectiveAddress,
-} from "./utils/address";
-import { incrementAccountSequenceNumber } from "./utils/account";
+} from "../utils/address";
+import { incrementAccountSequenceNumber } from "../utils/account";
 
 (async () => {
   const address = getAddressFromPrivateKey();
