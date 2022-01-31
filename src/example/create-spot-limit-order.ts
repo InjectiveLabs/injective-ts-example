@@ -1,4 +1,4 @@
-import { BigNumberInBase } from "@injectivelabs/utils";
+import { BigNumberInBase, BigNumberInWei } from "@injectivelabs/utils";
 import { fetchInjectiveAddressDetails } from "../consumers/auth";
 import {
   getAddressFromPrivateKey,
@@ -18,7 +18,7 @@ import { createSpotLimitOrder } from "../services/exchange";
   };
 
   try {
-    const price = new BigNumberInBase(5).toWei(
+    const price = new BigNumberInWei(5).toBase(
       6 /* USDT decimals */ - 18 /* INJ decimals */
     );
     const quantity = new BigNumberInBase(10).toWei(
