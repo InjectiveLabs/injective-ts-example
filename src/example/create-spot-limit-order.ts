@@ -1,4 +1,7 @@
-import { BigNumberInBase, BigNumberInWei } from "@injectivelabs/utils";
+import {
+  spotPriceToChainPriceToFixed,
+  spotQuantityToChainQuantityToFixed,
+} from "@injectivelabs/utils";
 import { fetchInjectiveAddressDetails } from "../consumers/auth";
 import {
   getAddressFromPrivateKey,
@@ -18,12 +21,11 @@ import { createSpotLimitOrder } from "../services/exchange";
   };
 
   try {
-    const price = new BigNumberInWei(5).toBase(
-      6 /* USDT decimals */ - 18 /* INJ decimals */
-    );
-    const quantity = new BigNumberInBase(10).toWei(
-      18 // Token Decimals, in case of INJ its 18, in case od USDT its 6)
-    );
+    const price = 5;
+    const quantity = 10;
+    const baseDecimals = 18; // INJ has 18 decimals
+    const quoteDecimals = 6; // USDT has 6 decimals
+
     const marketId =
       "0xa508cb32923323679f29a032c70342c147c17d0145625922b0ef22e955c844c0"; // INJ/USDT on testnet;
     const injectiveAddress = "inj1ql0alrq4e4ec6rv9svqjwer0k6ewfjkaay9lne";
@@ -38,8 +40,15 @@ import { createSpotLimitOrder } from "../services/exchange";
       marketId,
       order: {
         orderType,
-        price: price.toFixed(),
-        quantity: quantity.toFixed(),
+        price: spotPriceToChainPriceToFixed({
+          value: price,
+          baseDecimals,
+          quoteDecimals,
+        }),
+        quantity: spotQuantityToChainQuantityToFixed({
+          value: quantity,
+          baseDecimals,
+        }),
         feeRecipient: injectiveAddress,
       },
     });

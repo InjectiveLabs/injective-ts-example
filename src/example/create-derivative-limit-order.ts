@@ -1,4 +1,9 @@
-import { BigNumberInBase } from "@injectivelabs/utils";
+import {
+  BigNumber,
+  derivativePriceToChainPriceToFixed,
+  derivativeMarginToChainMarginToFixed,
+  derivativeQuantityToChainQuantityToFixed,
+} from "@injectivelabs/utils";
 import { fetchInjectiveAddressDetails } from "../consumers/auth";
 import {
   getAddressFromPrivateKey,
@@ -18,10 +23,12 @@ import { createDerivativeLimitOrder } from "../services/exchange";
   };
 
   try {
-    const price = new BigNumberInBase(5).toWei(6 /* USDT decimals */);
-    const quantity = new BigNumberInBase(10);
+    const price = 5;
+    const quantity = 10;
     const leverage = 1;
-    const margin = price.times(quantity).div(leverage);
+    const quoteDecimals = 6; /* USDT has 6 decimals */
+
+    const margin = new BigNumber(price).times(quantity).div(leverage);
     const marketId =
       "0x9b9980167ecc3645ff1a5517886652d94a0825e54a77d2057cbbe3ebee015963"; // INJ/USDT PERP on testnet;
     const injectiveAddress = "inj1ql0alrq4e4ec6rv9svqjwer0k6ewfjkaay9lne";
@@ -36,9 +43,15 @@ import { createDerivativeLimitOrder } from "../services/exchange";
       marketId,
       order: {
         orderType,
-        margin: margin.toFixed(),
-        price: price.toFixed(),
-        quantity: quantity.toFixed(),
+        margin: derivativeMarginToChainMarginToFixed({
+          value: margin,
+          quoteDecimals,
+        }),
+        price: derivativePriceToChainPriceToFixed({
+          value: price,
+          quoteDecimals,
+        }),
+        quantity: derivativeQuantityToChainQuantityToFixed({ value: quantity }),
         feeRecipient: injectiveAddress,
       },
     });

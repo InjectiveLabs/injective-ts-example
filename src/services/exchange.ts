@@ -12,6 +12,7 @@ import {
 } from "@injectivelabs/spot-consumer";
 import { DerivativeMarketProtoComposer } from "@injectivelabs/derivatives-consumer";
 import { SubaccountProtoComposer } from "@injectivelabs/subaccount-consumer";
+import { denomAmountToGrpcChainDenomAmount } from "@injectivelabs/utils";
 
 export const createSpotLimitOrder = async ({
   subaccountId,
@@ -37,8 +38,8 @@ export const createSpotLimitOrder = async ({
     marketId,
     order: {
       orderType: order.orderType,
-      price: order.price,
-      quantity: order.quantity,
+      price: denomAmountToGrpcChainDenomAmount(order.price).toFixed(),
+      quantity: denomAmountToGrpcChainDenomAmount(order.quantity).toFixed(),
       feeRecipient: order.feeRecipient,
       triggerPrice: "0",
     },
@@ -104,9 +105,9 @@ export const createDerivativeLimitOrder = async ({
     marketId,
     order: {
       orderType: order.orderType,
-      price: order.price,
-      margin: order.margin,
-      quantity: order.quantity,
+      price: denomAmountToGrpcChainDenomAmount(order.price).toFixed(),
+      margin: denomAmountToGrpcChainDenomAmount(order.margin).toFixed(),
+      quantity: denomAmountToGrpcChainDenomAmount(order.quantity).toFixed(),
       feeRecipient: order.feeRecipient,
       triggerPrice: "0",
     },
@@ -164,7 +165,7 @@ export const depositToSubaccount = async ({
     subaccountId,
     injectiveAddress,
     denom,
-    amount,
+    amount: denomAmountToGrpcChainDenomAmount(amount).toFixed(),
   });
 
   /**

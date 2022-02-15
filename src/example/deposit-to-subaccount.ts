@@ -1,4 +1,4 @@
-import { BigNumberInBase } from "@injectivelabs/utils";
+import { denomAmountToChainDenomAmountToFixed } from "@injectivelabs/utils";
 import { fetchInjectiveAddressDetails } from "../consumers/auth";
 import {
   getAddressFromPrivateKey,
@@ -19,9 +19,8 @@ import { depositToSubaccount } from "../services/exchange";
 
   try {
     const denom = "inj";
-    const amount = new BigNumberInBase(10).toWei(
-      18 // Token Decimals, in case of INJ its 18, in case od USDT its 6)
-    );
+    const amount = 10;
+    const decimals = 18;
     const injectiveAddress = "inj1ql0alrq4e4ec6rv9svqjwer0k6ewfjkaay9lne";
     const subaccountId =
       "0x07dfdf8c15cd738d0d85830127646fb6b2e4cadd000000000000000000000000";
@@ -30,7 +29,7 @@ import { depositToSubaccount } from "../services/exchange";
       injectiveAddress,
       denom,
       subaccountId,
-      amount: amount.toFixed(),
+      amount: denomAmountToChainDenomAmountToFixed({ value: amount, decimals }),
       accountDetails: accountDetailsWithCosmosPublicKey,
     });
 
