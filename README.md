@@ -4,6 +4,8 @@ _Decentralized Derivatives Trading. Any Market. Anytime. Anywhere._
 
 An example repository based on TypeScript on interacting with our chain
 
+**DEPRECATED, please use: [sdk-ts-example repo](https://github.com/InjectiveLabs/injective-sdk-ts-example)**
+
 ---
 
 ## 📚 Getting Started
